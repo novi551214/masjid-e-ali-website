@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Environment secrets — never commit real credentials
+backend/.env
+
+# SQLite database (contains real data once seeded — don't ship a stale/local copy)
+backend/database/masjid.db
+backend/database/masjid.db-shm
+backend/database/masjid.db-wal
+
+# Uploaded poster images (runtime data, not source)
+backend/uploads/
+
+# OS / editor cruft
+.DS_Store
+*.log

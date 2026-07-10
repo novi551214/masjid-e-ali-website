@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: masjid-e-ali-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    # Free tier's disk is wiped on every restart/redeploy, so re-run the
+    # (idempotent) seed script on every boot — it recreates the admin user
+    # and default events if they're missing, but never duplicates them.
+    startCommand: node database/seed.js && node server.js
+    envVars:
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: ADMIN_SEED_USERNAME
+        sync: false
+      - key: ADMIN_SEED_PASSWORD
+        sync: false
