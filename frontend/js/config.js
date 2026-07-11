@@ -8,6 +8,6 @@
 (function () {
   var isLocal = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
   if (!isLocal) {
-    window.MEA_API_BASE = "https://REPLACE-WITH-YOUR-RENDER-URL.onrender.com";
+    window.MEA_API_BASE = "https://masjid-e-ali-backend.onrender.com";
   }
 })();
