@@ -11,6 +11,7 @@ const DEFAULT_PRAYER_TIMES = {
   Sunrise: "05:33",
   Dhuhr:   "13:02",
   Asr:     "17:45",   // Jafari Asr — later than Shafi (shadow doubles)
+  Sunset:  "20:50",   // true sunset — Maghrib is delayed after this
   Maghrib: "21:10",   // ~17 min after sunset (redness leaves sky)
   Isha:    "22:05",   // 14° below horizon
   Midnight:"00:15"
@@ -22,6 +23,7 @@ const PRAYER_DISPLAY = [
   { key: "Sunrise", label: "Sunrise"  },
   { key: "Dhuhr",   label: "Duhr"     },
   { key: "Asr",     label: "Asr"      },
+  { key: "Sunset",  label: "Sunset"   },
   { key: "Maghrib", label: "Maghrib"  },
   { key: "Isha",    label: "Isha"     },
   { key: "Midnight",label: "Midnight" }
@@ -76,44 +78,26 @@ window.PrayerModule = (function () {
 
   async function fetchAndRender() {
     try {
-      // Shia Ithna-Ashari (Jafari) calculation:
-      //   method=0 = custom angles
+      // Shia Ithna-Ashari (Jafari) calculation, method=0:
       //   methodSettings=16,4,14 → Fajr 16°, Maghrib 4° after sunset, Isha 14°
       //   midnightMode=1 → midnight = midpoint Maghrib→Fajr (Jafari standard)
-      //
-      // We fetch TWO calls in parallel:
-      //   Call A: school=0 (Shafi) — correct Fajr, Maghrib, Isha, Midnight
-      //   Call B: school=1 (Hanafi) — correct Asr (shadow doubles = Jafari Asr)
-      // Then we combine: take Asr from Call B, everything else from Call A.
+      // No `school` param — Asr uses method=0's own single-shadow-length
+      // (Shafi'i-style) calculation rather than the shadow-doubling
+      // Hanafi/Jafari convention.
 
-      const BASE = "https://api.aladhan.com/v1/timingsByCity?city=Somerset&country=US&state=NJ" +
+      const url = "https://api.aladhan.com/v1/timingsByCity?city=Somerset&country=US&state=NJ" +
         "&method=0&methodSettings=16,4,14&midnightMode=1";
 
-      const [resA, resB] = await Promise.all([
-        fetch(BASE + "&school=0"),
-        fetch(BASE + "&school=1")
-      ]);
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("API error");
 
-      if (!resA.ok || !resB.ok) throw new Error("API error");
+      const json = await res.json();
+      const data = json.data;
 
-      const [jsonA, jsonB] = await Promise.all([resA.json(), resB.json()]);
-      const dataA = jsonA.data;
-      const dataB = jsonB.data;
+      _timings = Object.assign({}, DEFAULT_PRAYER_TIMES, data.timings);
 
-      // Start with all times from Call A (Shafi — correct Fajr/Maghrib/Isha)
-      _timings = Object.assign({}, DEFAULT_PRAYER_TIMES, dataA.timings);
-
-      // Override Asr with Hanafi/Jafari time from Call B (shadow doubles)
-      if (dataB.timings && dataB.timings.Asr) {
-        _timings.Asr = dataB.timings.Asr;
-      }
-      // Also use AsrHanafi if the API exposes it separately
-      if (dataB.timings && dataB.timings.AsrHanafi) {
-        _timings.Asr = dataB.timings.AsrHanafi;
-      }
-
-      _hijriDate     = _formatHijri(dataA.date.hijri);
-      _gregorianDate = _formatGregorian(dataA.date.readable);
+      _hijriDate     = _formatHijri(data.date.hijri);
+      _gregorianDate = _formatGregorian(data.date.readable);
 
       // Cache to localStorage
       localStorage.setItem("mea_prayer_api_cache", JSON.stringify({
@@ -142,8 +126,9 @@ window.PrayerModule = (function () {
       }
     }
 
-    // Check admin override
-    _applyAdminOverride();
+    // Check admin override (backend is authoritative; localStorage is an
+    // offline fallback for when the backend can't be reached)
+    await _applyAdminOverride();
 
     renderDateBar();
     renderPrayerGrid();
@@ -152,22 +137,36 @@ window.PrayerModule = (function () {
 
   // ── Admin Override ────────────────────────────────────────────
 
-  function _applyAdminOverride() {
+  function _mergeOverride(override) {
+    if (!override) return;
+    const map = {
+      imsaak: "Imsak", fajar: "Fajr", sunrise: "Sunrise",
+      duhr: "Dhuhr", asr: "Asr", sunset: "Sunset",
+      maghrib: "Maghrib", isha: "Isha", midnight: "Midnight"
+    };
+    Object.keys(map).forEach(function (k) {
+      if (override[k]) _timings[map[k]] = override[k];
+    });
+    const greg = override.date_gregorian || override.dateGregorian;
+    const hijri = override.date_hijri || override.dateHijri;
+    if (greg)  _gregorianDate = greg;
+    if (hijri) _hijriDate     = hijri;
+  }
+
+  async function _applyAdminOverride() {
+    const apiBase = window.MEA_API_BASE || "http://localhost:4000";
     try {
-      const override = JSON.parse(localStorage.getItem("mea_prayer_times") || "null");
-      if (!override) return;
-      // Merge admin times on top of API times
-      const map = {
-        imsaak: "Imsak", fajar: "Fajr", sunrise: "Sunrise",
-        duhr: "Dhuhr", asr: "Asr", sunset: "Sunset",
-        maghrib: "Maghrib", isha: "Isha", midnight: "Midnight"
-      };
-      Object.keys(map).forEach(function (k) {
-        if (override[k]) _timings[map[k]] = override[k];
-      });
-      if (override.dateGregorian) _gregorianDate = override.dateGregorian;
-      if (override.dateHijri)     _hijriDate     = override.dateHijri;
-    } catch (e) { /* ignore */ }
+      const res = await fetch(apiBase + "/api/prayer-times");
+      if (!res.ok) throw new Error("no override set");
+      const override = await res.json();
+      _mergeOverride(override);
+    } catch (e) {
+      // Backend unreachable — fall back to last-known override cached locally
+      try {
+        const cached = JSON.parse(localStorage.getItem("mea_prayer_times") || "null");
+        _mergeOverride(cached);
+      } catch (_) { /* ignore */ }
+    }
   }
 
   // ── Render Date Bar ───────────────────────────────────────────

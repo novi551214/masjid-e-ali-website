@@ -22,4 +22,9 @@ function create({ type, name, email, phone, subject, message }) {
   return getById(id);
 }
 
-module.exports = { getAll, getById, create };
+function remove(id) {
+  const result = db.prepare("DELETE FROM submissions WHERE id = ?").run(id);
+  return result.changes > 0;
+}
+
+module.exports = { getAll, getById, create, remove };

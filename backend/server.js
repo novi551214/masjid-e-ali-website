@@ -42,6 +42,7 @@ app.use("/api/prayer-times", require("./routes/prayer-times"));
 app.use("/api/events", require("./routes/events"));
 app.use("/api/submissions", require("./routes/submissions"));
 app.use("/api/admin", require("./routes/admin"));
+app.use("/api/live-status", require("./routes/live"));
 
 // ---- Health check --------------------------------------------------
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));

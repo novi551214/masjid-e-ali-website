@@ -150,7 +150,7 @@
         <span id="prayerGregorianDate" class="greg"></span>
         <span id="prayerHijriDate" class="hijri"></span>
       </div>
-      <div id="prayerGrid"><!-- rendered by JS --></div>
+      <div id="prayerGrid" class="prayer-grid"><!-- rendered by JS --></div>
       <div id="nextPrayerCountdown"><!-- rendered by JS --></div>
       <p class="prayer-note">* Shia Ithna-Ashari (Jafari) method &mdash; Somerset, NJ</p>
     </div>
@@ -159,25 +159,74 @@
   <div class="section">
     <div class="container">
       <div class="section-head reveal">
-        <span class="eyebrow">Get Involved</span>
-        <h2>Quick Links</h2>
+        <span class="eyebrow">Every Day of the Week</span>
+        <h2>Masjid Daily Open Schedule</h2>
         <div class="divider-mark divider-star"></div>
+        <p style="margin-top:14px;">The masjid is open 7 days a week for prayer and special programs.</p>
+        <p style="font-style:italic;font-size:.85rem;color:var(--charcoal-soft);margin-top:6px;">Subject to change throughout the year to accommodate the timings of Salaat.</p>
       </div>
-      <div class="quick-grid">
-        <a href="#donate" class="quick-card reveal" data-route="donate">
-          <div class="icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
-          <h3>Donate</h3>
-          <p>Support our masjid, schools, and community programs.</p>
-        </a>
-        <a href="#events" class="quick-card reveal" data-route="events">
-          <div class="icon"><i class="fa-regular fa-calendar-days"></i></div>
-          <h3>Upcoming Programs</h3>
-          <p>See our latest majalis, lectures, and community events.</p>
-        </a>
-        <a href="#broadcast" class="quick-card reveal" data-route="broadcast">
-          <div class="icon"><i class="fa-solid fa-video"></i></div>
-          <h3>Live Broadcast</h3>
-          <p>Join us live for Friday prayers and special programs.</p>
+
+      <div class="schedule-table-wrap reveal">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th class="schedule-corner"></th>
+              <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Fajr</th>
+              <td>
+                <div class="jamaat">Jamaat 4:30AM Sharp</div>
+                <div class="window">4:30AM – 6:00AM</div>
+                <div class="program">Nahj ul Balagha &amp; Ziyara-e-Ashura</div>
+              </td>
+              <td class="empty">—</td>
+              <td class="empty">—</td>
+              <td class="empty">—</td>
+              <td class="empty">—</td>
+              <td class="empty">—</td>
+              <td>
+                <div class="jamaat">Jamaat 4:30AM Sharp</div>
+                <div class="window">4:30AM – 6:00AM</div>
+                <div class="program">Quran Circle</div>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Dhuhr &amp; Asr</th>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">12:30PM – 1:30PM</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">12:30PM – 1:30PM</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">12:30PM – 1:30PM</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">12:30PM – 1:30PM</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">12:30PM – 1:30PM</div></td>
+              <td><div class="jamaat">Juma Prayer 12:00PM Sharp</div><div class="window">1:00PM – 2:00PM</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">12:30PM – 1:30PM</div></td>
+            </tr>
+            <tr>
+              <th scope="row">Maghrib &amp; Isha</th>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">8:30PM – 9:30PM</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">8:30PM – 9:30PM</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">7:00PM – 8:30PM</div><div class="program">Dua-e-Tawassul 8:00pm</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">8:30PM – 9:30PM</div><div class="program">Explanation of Islamic Laws</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">7:00PM – 8:30PM</div><div class="program">Dua-e-Kumayl 7:00pm</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">8:30PM – 9:30PM</div></td>
+              <td><div class="jamaat">Jamaat At Prime Time</div><div class="window">8:30PM – 9:30PM</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section section-alt">
+    <div class="container">
+      <div class="newsletter-cta reveal">
+        <div class="icon"><i class="fa-solid fa-envelope-open-text"></i></div>
+        <h2>Stay Connected</h2>
+        <p>Subscribe to our email list for prayer time updates, event announcements, and community news.</p>
+        <a href="https://www.masjid-e-ali.org/subscribe-to-our-email-list/" target="_blank" rel="noopener" class="btn btn-gold">
+          Subscribe to Our Email List <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
       </div>
     </div>
@@ -209,20 +258,20 @@
           <a href="https://www.masjid-e-ali.org/the-masjid/" target="_blank" rel="noopener" class="btn btn-ghost">Explore MSA <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
         <div class="reveal">
-          <div class="photo-frame">
+          <div class="history-media-card">
             <img
               src="images/majid_e_ali.jpeg"
               alt="Masjid-e-Ali — 47 Cedar Grove Lane, Somerset, NJ">
             <div class="caption">Masjid-e-Ali, Somerset, NJ</div>
-          </div>
-          <div class="contact-info-card">
-            <h3>At a Glance</h3>
-            <div class="info-line"><i class="fa-solid fa-location-dot"></i><span>47 Cedar Grove Lane, Somerset, NJ 08873</span></div>
-            <div class="info-line"><i class="fa-solid fa-ruler-combined"></i><span>3.3-acre campus, purchased for community use</span></div>
-            <div class="info-line"><i class="fa-solid fa-mosque"></i><span>Foundation laid: Sept 9, 2006 (15 Shaba'an 1427 AH)</span></div>
-            <div class="info-line"><i class="fa-solid fa-door-open"></i><span>Inaugurated: Nov 20, 2010 (13 Dhul Hijjah 1431 AH)</span></div>
-            <div class="info-line"><i class="fa-solid fa-file-shield"></i><span>501(c)(3) Non-Profit &middot; Tax ID 22-2413703</span></div>
-            <div class="info-line"><i class="fa-solid fa-people-group"></i><span>Governed by elected leadership, every 3 years</span></div>
+            <div class="history-media-info">
+              <h3>At a Glance</h3>
+              <div class="info-line"><i class="fa-solid fa-location-dot"></i><span>47 Cedar Grove Lane, Somerset, NJ 08873</span></div>
+              <div class="info-line"><i class="fa-solid fa-ruler-combined"></i><span>3.3-acre campus, purchased for community use</span></div>
+              <div class="info-line"><i class="fa-solid fa-mosque"></i><span>Foundation laid: Sept 9, 2006 (15 Shaba'an 1427 AH)</span></div>
+              <div class="info-line"><i class="fa-solid fa-door-open"></i><span>Inaugurated: Nov 20, 2010 (13 Dhul Hijjah 1431 AH)</span></div>
+              <div class="info-line"><i class="fa-solid fa-file-shield"></i><span>501(c)(3) Non-Profit &middot; Tax ID 22-2413703</span></div>
+              <div class="info-line"><i class="fa-solid fa-people-group"></i><span>Governed by elected leadership, every 3 years</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -685,18 +734,38 @@
   </div>
   <div class="section">
     <div class="container" style="max-width:920px;">
-      <div class="broadcast-wrap reveal">
-        <div class="broadcast-frame">
-          <iframe
-            src="https://www.youtube.com/embed/live_stream?channel=UCCzCz3VIJaZ9hRpZwnpHm8A"
-            title="Masjid-e-Ali Live Broadcast"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-          </iframe>
+      <div class="broadcast-grid">
+        <div class="broadcast-column reveal" id="broadcastColumnEnglish">
+          <h3 class="broadcast-lang-label"><i class="fa-solid fa-language"></i> English</h3>
+          <div class="broadcast-wrap">
+            <div class="broadcast-frame" id="broadcastFrameEnglish">
+              <div class="broadcast-offline">
+                <i class="fa-solid fa-video-slash"></i>
+                <p>Not broadcasting live right now.</p>
+                <span>Check back during Friday prayers or special programs.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="broadcast-column reveal" id="broadcastColumnUrdu">
+          <h3 class="broadcast-lang-label"><i class="fa-solid fa-language"></i> Urdu</h3>
+          <div class="broadcast-wrap">
+            <div class="broadcast-frame" id="broadcastFrameUrdu">
+              <div class="broadcast-offline">
+                <i class="fa-solid fa-video-slash"></i>
+                <p>Not broadcasting live right now.</p>
+                <span>Check back during Friday prayers or special programs.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="event-empty" id="broadcastBothHidden" hidden>
+          <i class="fa-regular fa-calendar" style="font-size:2rem;color:var(--gold-deep);margin-bottom:14px;display:block;"></i>
+          No broadcasts are scheduled right now. Please check back soon.
         </div>
       </div>
       <p class="broadcast-overlay-text reveal" style="text-align:center;color:var(--charcoal-soft);margin-top:20px;font-style:italic;">
-        Live stream plays automatically during active broadcasts.
+        This page automatically shows each stream the moment it goes live.
       </p>
       <p style="text-align:center;margin-top:16px;" class="reveal">
         <a href="https://www.youtube.com/channel/UCCzCz3VIJaZ9hRpZwnpHm8A/live" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
@@ -809,6 +878,7 @@
       <div class="admin-tabs">
         <button class="admin-tab active" data-admin-tab="prayer">Prayer Timings</button>
         <button class="admin-tab" data-admin-tab="events">Events</button>
+        <button class="admin-tab" data-admin-tab="broadcast">Live Broadcast</button>
         <button class="admin-tab" data-admin-tab="submissions">Submissions</button>
       </div>
 
@@ -869,6 +939,35 @@
         <div id="admEventSaveError" style="color:#B4462F;font-size:.82rem;margin-top:10px;display:none;"></div>
       </div>
 
+      <!-- Live Broadcast Tab -->
+      <div class="admin-section" id="adminTab-broadcast">
+        <p style="font-size:.82rem;color:var(--charcoal-soft);margin-bottom:16px;">
+          When a stream starts on the masjid's YouTube channel, paste its video/live URL here. English and Urdu are independent — both can be live at once for parallel majalis (rare), but on a normal single-language day, hide whichever language isn't broadcasting so its section doesn't show on the public page at all.
+        </p>
+
+        <h4 style="color:var(--green-deep);margin-top:0;">English Broadcast</h4>
+        <div id="admBroadcastStatusEnglish" style="font-size:.85rem;font-weight:700;margin-bottom:14px;"></div>
+        <div class="form-row">
+          <label>YouTube Video or Live URL</label>
+          <input type="text" id="admBroadcastUrlEnglish" placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtu.be/...">
+        </div>
+        <button class="btn btn-green admin-set-broadcast" data-slot="english">Go Live <i class="fa-solid fa-satellite-dish"></i></button>
+        <button class="btn btn-outline admin-end-broadcast" data-slot="english" style="color:#B4462F;border-color:#B4462F;margin-left:10px;">End Broadcast <i class="fa-solid fa-video-slash"></i></button>
+        <button class="btn btn-ghost admin-toggle-visible" data-slot="english" style="margin-left:10px;">Hide on Public Page <i class="fa-solid fa-eye-slash"></i></button>
+        <div id="admBroadcastErrorEnglish" style="color:#B4462F;font-size:.82rem;margin-top:10px;display:none;"></div>
+
+        <h4 style="color:var(--green-deep);margin-top:32px;">Urdu Broadcast</h4>
+        <div id="admBroadcastStatusUrdu" style="font-size:.85rem;font-weight:700;margin-bottom:14px;"></div>
+        <div class="form-row">
+          <label>YouTube Video or Live URL</label>
+          <input type="text" id="admBroadcastUrlUrdu" placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtu.be/...">
+        </div>
+        <button class="btn btn-green admin-set-broadcast" data-slot="urdu">Go Live <i class="fa-solid fa-satellite-dish"></i></button>
+        <button class="btn btn-outline admin-end-broadcast" data-slot="urdu" style="color:#B4462F;border-color:#B4462F;margin-left:10px;">End Broadcast <i class="fa-solid fa-video-slash"></i></button>
+        <button class="btn btn-ghost admin-toggle-visible" data-slot="urdu" style="margin-left:10px;">Hide on Public Page <i class="fa-solid fa-eye-slash"></i></button>
+        <div id="admBroadcastErrorUrdu" style="color:#B4462F;font-size:.82rem;margin-top:10px;display:none;"></div>
+      </div>
+
       <!-- Submissions Tab -->
       <div class="admin-section" id="adminTab-submissions">
         <p style="font-size:.82rem;color:var(--charcoal-soft);margin-bottom:16px;">Contact Us and Ask the Scholar messages, newest first.</p>
@@ -908,6 +1007,7 @@
 <!-- Scripts — loaded in dependency order -->
 <script src="js/config.js" defer></script>
 <script src="js/prayer.js" defer></script>
+<script src="js/live.js"   defer></script>
 <script src="js/router.js" defer></script>
 <script src="js/admin.js"  defer></script>
 <script src="js/ui.js"     defer></script>

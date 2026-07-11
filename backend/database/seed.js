@@ -27,16 +27,16 @@ if (!existingAdmin) {
 }
 
 // ---- Default prayer times row -------------------------------------
+// All fields blank by default: this row only exists to hold *admin
+// overrides* for specific fields. Blank = "no override, use the live
+// AlAdhan API calculation instead" (see frontend/js/prayer.js).
 const existingPrayer = db.prepare("SELECT id FROM prayer_times WHERE id = 1").get();
 if (!existingPrayer) {
   db.prepare(`
     INSERT INTO prayer_times (id, date_gregorian, date_hijri, imsaak, fajar, sunrise, duhr, asr, sunset, maghrib, isha, midnight)
-    VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
-    "Thursday, July 02, 2026 AD", "Muharram 17, 1448 AH",
-    "03:35", "03:45", "05:32", "13:02", "17:45", "20:52", "21:10", "22:05", "00:15"
-  );
-  console.log("✅ Default prayer times row created.");
+    VALUES (1, '', '', '', '', '', '', '', '', '', '', '')
+  `).run();
+  console.log("✅ Default (blank) prayer times row created.");
 } else {
   console.log("ℹ️  Prayer times row already exists — skipping.");
 }

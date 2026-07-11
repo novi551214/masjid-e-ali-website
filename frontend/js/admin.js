@@ -175,6 +175,7 @@ window.AdminModule = (function () {
     closeAdminLogin();
     renderAdminPrayerForm();
     renderAdminEventsList();
+    renderAdminBroadcastStatus();
     renderAdminSubmissionsList();
     _el("adminPanelOverlay").classList.add("show");
   }
@@ -381,6 +382,49 @@ window.AdminModule = (function () {
     });
   }
 
+  var BROADCAST_SLOTS = ["english", "urdu"];
+
+  function _renderBroadcastSlot(slot, slotStatus) {
+    var cap = slot.charAt(0).toUpperCase() + slot.slice(1);
+    var statusEl = _el("admBroadcastStatus" + cap);
+    var urlEl = _el("admBroadcastUrl" + cap);
+    var toggleBtn = document.querySelector('.admin-toggle-visible[data-slot="' + slot + '"]');
+    if (!statusEl || !urlEl) return;
+
+    var visible = !slotStatus || slotStatus.visible !== false;
+    var hiddenNote = visible ? "" : ' <span style="color:#B4462F;">(hidden from public page)</span>';
+
+    if (slotStatus && slotStatus.live && slotStatus.videoId) {
+      statusEl.innerHTML = '<span style="color:var(--green-deep);"><i class="fa-solid fa-circle" style="color:#c0392b;font-size:.6rem;"></i>&nbsp; Currently live — video ID: ' + escapeHtml(slotStatus.videoId) + '</span>' + hiddenNote;
+      urlEl.value = "https://www.youtube.com/watch?v=" + slotStatus.videoId;
+    } else {
+      statusEl.innerHTML = '<span style="color:var(--charcoal-soft);font-weight:400;">Not broadcasting live right now.</span>' + hiddenNote;
+      urlEl.value = "";
+    }
+
+    if (toggleBtn) {
+      toggleBtn.dataset.visible = String(visible);
+      toggleBtn.innerHTML = visible
+        ? 'Hide on Public Page <i class="fa-solid fa-eye-slash"></i>'
+        : 'Show on Public Page <i class="fa-solid fa-eye"></i>';
+    }
+  }
+
+  function renderAdminBroadcastStatus() {
+    _apiFetch("/api/live-status")
+      .then(function (r) { return r.json(); })
+      .then(function (status) {
+        BROADCAST_SLOTS.forEach(function (slot) { _renderBroadcastSlot(slot, status[slot]); });
+      })
+      .catch(function () {
+        BROADCAST_SLOTS.forEach(function (slot) {
+          var cap = slot.charAt(0).toUpperCase() + slot.slice(1);
+          var statusEl = _el("admBroadcastStatus" + cap);
+          if (statusEl) statusEl.innerHTML = '<span style="color:var(--charcoal-soft);font-weight:400;">Could not load broadcast status.</span>';
+        });
+      });
+  }
+
   function renderAdminSubmissionsList() {
     _apiFetch("/api/submissions")
       .then(function (r) { return r.json(); })
@@ -399,15 +443,33 @@ window.AdminModule = (function () {
     }
     list.innerHTML = subs.map(function (s) {
       var typeLabel = s.type === "scholar" ? "Ask the Scholar" : "Contact Us";
-      return '<div class="event-admin-row">' +
+      return '<div class="event-admin-row" data-submission-id="' + s.id + '">' +
         '<div class="row-top"><h4>' + escapeHtml(s.name) +
         ' &mdash; <span style="font-weight:400;font-size:.8rem;color:var(--gold-deep);">' + typeLabel + '</span></h4>' +
-        '<span style="font-size:.75rem;color:var(--charcoal-soft);">' + escapeHtml((s.created_at || "").replace("T", " ").slice(0, 16)) + '</span></div>' +
+        '<div class="row-actions">' +
+        '<span style="font-size:.75rem;color:var(--charcoal-soft);white-space:nowrap;">' + escapeHtml((s.created_at || "").replace("T", " ").slice(0, 16)) + '</span>' +
+        '<button type="button" class="admin-delete-submission" title="Delete"><i class="fa-solid fa-trash"></i></button>' +
+        '</div></div>' +
         '<div style="font-size:.82rem;color:var(--charcoal-soft);">' + escapeHtml(s.email) + (s.phone ? " &middot; " + escapeHtml(s.phone) : "") + '</div>' +
         '<div style="font-size:.85rem;font-weight:700;color:var(--green-deep);margin-top:6px;">' + escapeHtml(s.subject) + '</div>' +
         '<p style="font-size:.88rem;margin:6px 0 0;">' + escapeHtml(s.message) + '</p>' +
         '</div>';
     }).join("");
+
+    list.querySelectorAll(".admin-delete-submission").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (!confirm("Delete this submission? This cannot be undone.")) return;
+        var id = btn.closest(".event-admin-row").dataset.submissionId;
+        _apiFetch("/api/submissions/" + id, { method: "DELETE" })
+          .then(function (r) {
+            if (!r.ok) throw new Error();
+            renderAdminSubmissionsList();
+          })
+          .catch(function () {
+            alert("Could not delete this submission. Please try again.");
+          });
+      });
+    });
   }
 
   function flashButton(btn, text) {
@@ -485,6 +547,7 @@ window.AdminModule = (function () {
       _apiFetch("/api/prayer-times", { method: "PUT", body: JSON.stringify(payload) })
         .then(function (r) { return r.json(); })
         .then(function () {
+          DataStore.setPrayerTimes(payload); // keep offline-fallback cache in sync
           if (window.PrayerModule) window.PrayerModule.fetchAndRender();
           flashButton(_el("admSavePrayer"), "Saved!");
         })
@@ -538,14 +601,87 @@ window.AdminModule = (function () {
 
     _el("admCancelEdit").addEventListener("click", _resetEventForm);
 
-    // Reset prayer timings to default (events have no client-side default —
-    // they live entirely in the database)
+    // Go live / end broadcast — one handler per button, keyed by data-slot
+    document.querySelectorAll(".admin-set-broadcast").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var slot = btn.dataset.slot;
+        var cap = slot.charAt(0).toUpperCase() + slot.slice(1);
+        var url = _el("admBroadcastUrl" + cap).value.trim();
+        var errEl = _el("admBroadcastError" + cap);
+        if (!url) { alert("Paste a YouTube video or live URL first."); return; }
+        errEl.style.display = "none";
+        _apiFetch("/api/live-status", { method: "PUT", body: JSON.stringify({ slot: slot, videoUrl: url }) })
+          .then(function (r) {
+            if (!r.ok) return r.json().then(function (d) { throw new Error(d.error || "Could not go live."); });
+            return r.json();
+          })
+          .then(function () {
+            renderAdminBroadcastStatus();
+            flashButton(btn, "Live!");
+          })
+          .catch(function (err) {
+            errEl.textContent = err.message;
+            errEl.style.display = "block";
+          });
+      });
+    });
+
+    document.querySelectorAll(".admin-end-broadcast").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var slot = btn.dataset.slot;
+        if (!confirm("End the " + slot + " broadcast? The page will show \"not live\" again.")) return;
+        _apiFetch("/api/live-status", { method: "PUT", body: JSON.stringify({ slot: slot, videoUrl: "" }) })
+          .then(function (r) { return r.json(); })
+          .then(function () {
+            renderAdminBroadcastStatus();
+            flashButton(btn, "Ended");
+          })
+          .catch(function () {
+            alert("Could not end the broadcast. Please try again.");
+          });
+      });
+    });
+
+    document.querySelectorAll(".admin-toggle-visible").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var slot = btn.dataset.slot;
+        var nextVisible = btn.dataset.visible !== "true"; // flip current state
+        _apiFetch("/api/live-status", { method: "PUT", body: JSON.stringify({ slot: slot, visible: nextVisible }) })
+          .then(function (r) { return r.json(); })
+          .then(function (status) {
+            // Use the response directly (already the fresh state) instead of
+            // a separate re-fetch — avoids a race where flashButton's timed
+            // revert could stomp the just-updated label with a stale one.
+            BROADCAST_SLOTS.forEach(function (s) { _renderBroadcastSlot(s, status[s]); });
+          })
+          .catch(function () {
+            alert("Could not update visibility. Please try again.");
+          });
+      });
+    });
+
+    // Reset prayer timings: clear the override stored in the database (not
+    // just the local cache) so the live AlAdhan calculation shows again.
     _el("admResetDefaults").addEventListener("click", function () {
-      if (!confirm("Restore original prayer timings?")) return;
-      DataStore.resetPrayerTimes();
-      renderAdminPrayerForm();
-      if (window.PrayerModule) window.PrayerModule.fetchAndRender();
-      flashButton(_el("admResetDefaults"), "Reset Done");
+      if (!confirm("Clear all prayer time overrides and show live times again?")) return;
+      var blankPayload = {
+        date_gregorian: "", date_hijri: "", imsaak: "", fajar: "", sunrise: "",
+        duhr: "", asr: "", sunset: "", maghrib: "", isha: "", midnight: ""
+      };
+      _apiFetch("/api/prayer-times", { method: "PUT", body: JSON.stringify(blankPayload) })
+        .then(function (r) {
+          if (!r.ok) throw new Error("Reset failed");
+          return r.json();
+        })
+        .then(function () {
+          DataStore.resetPrayerTimes();
+          renderAdminPrayerForm();
+          if (window.PrayerModule) window.PrayerModule.fetchAndRender();
+          flashButton(_el("admResetDefaults"), "Reset Done");
+        })
+        .catch(function () {
+          alert("Could not reset prayer times. Check that the backend is running and try again.");
+        });
     });
   }
 
@@ -557,6 +693,7 @@ window.AdminModule = (function () {
     closeAdminPanel: closeAdminPanel,
     renderAdminPrayerForm: renderAdminPrayerForm,
     renderAdminEventsList: renderAdminEventsList,
+    renderAdminBroadcastStatus: renderAdminBroadcastStatus,
     renderAdminSubmissionsList: renderAdminSubmissionsList
   };
 

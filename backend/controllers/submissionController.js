@@ -65,4 +65,13 @@ function listSubmissions(req, res) {
   res.json(Submission.getAll());
 }
 
-module.exports = { createContactSubmission, createScholarSubmission, listSubmissions };
+function deleteSubmission(req, res) {
+  const { id } = req.params;
+  const deleted = Submission.remove(id);
+  if (!deleted) {
+    return res.status(404).json({ error: `Submission "${id}" not found.` });
+  }
+  res.status(204).send();
+}
+
+module.exports = { createContactSubmission, createScholarSubmission, listSubmissions, deleteSubmission };

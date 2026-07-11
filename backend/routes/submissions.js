@@ -1,8 +1,9 @@
 // ================================================================
 // MASJID-E-ALI — Submissions Routes
-// POST /api/submissions/contact   (public)
-// POST /api/submissions/scholar   (public)
-// GET  /api/submissions           (admin only)
+// POST   /api/submissions/contact   (public)
+// POST   /api/submissions/scholar   (public)
+// GET    /api/submissions           (admin only)
+// DELETE /api/submissions/:id       (admin only)
 // ================================================================
 
 const express = require("express");
@@ -13,6 +14,7 @@ const {
   createContactSubmission,
   createScholarSubmission,
   listSubmissions,
+  deleteSubmission,
 } = require("../controllers/submissionController");
 const { requireAdmin } = require("../middleware/auth");
 
@@ -28,5 +30,6 @@ const submitLimiter = rateLimit({
 router.post("/contact", submitLimiter, createContactSubmission);
 router.post("/scholar", submitLimiter, createScholarSubmission);
 router.get("/", requireAdmin, listSubmissions);
+router.delete("/:id", requireAdmin, deleteSubmission);
 
 module.exports = router;

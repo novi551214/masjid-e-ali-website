@@ -101,6 +101,8 @@ All responses are JSON. Protected routes require an
 | DELETE | `/api/events/:id` | Admin | Delete an event |
 | POST | `/api/admin/login` | — | `{ username, password }` → `{ token, expiresIn }` |
 | POST | `/api/admin/logout` | — | Client discards the token (stateless JWT) |
+| GET | `/api/live-status` | Public | Current live videos — `{ english: {live,videoId,visible}, urdu: {...} }` |
+| PUT | `/api/live-status` | Admin | Set video and/or visibility for one slot — body: `{ slot: "english"\|"urdu", videoUrl?, visible? }` |
 
 **Example — log in and update prayer times:**
 
@@ -127,11 +129,14 @@ These were intentionally left as placeholders rather than guessed:
 
 - **Community Services** (Services page) has no dedicated source page
   yet — shown with a "Contact Us" placeholder card.
-- **Live Broadcast embed** uses a YouTube channel *username*
-  (`masjidealinj`), which the `live_stream?channel=` embed parameter
-  technically expects as a channel *ID* (`UC...`). If the embed doesn't
-  resolve, replace it with the real channel ID, or rely on the
-  "Open on YouTube" fallback link already on that page.
+- **Live Broadcast** is admin-controlled rather than auto-detected (the
+  old unofficial `live_stream?channel=` embed trick frequently failed
+  to show an active stream, and the official YouTube Data API requires
+  a Google Cloud project/API key). Instead, whoever starts a stream
+  pastes its YouTube URL into the admin dashboard's Broadcast tab —
+  the page then embeds that exact video until it's cleared. Supports
+  two independent slots (English/Urdu) side by side, since parallel
+  majalis in both languages sometimes broadcast at the same time.
 - **ACH donation form** intentionally does **not** collect real bank
   account/routing numbers client-side (there's nowhere secure to send
   them without a backend for that specific purpose). It collects

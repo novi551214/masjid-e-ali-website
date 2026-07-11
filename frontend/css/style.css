@@ -57,12 +57,17 @@ p{line-height:1.75;color:var(--charcoal-soft);margin:0 0 1em;}
 }
 .bismillah{
   font-family:var(--font-arabic);
-  font-size:clamp(1.05rem,2.4vw,1.55rem);
-  color:var(--green-deep);
-  font-weight:600;
-  margin-bottom:6px;
+  font-size:clamp(1.25rem,2.8vw,1.9rem);
+  font-weight:800;
+  margin-bottom:8px;
   direction:rtl;
   text-align:center;
+  background:linear-gradient(100deg, var(--gold-deep) 0%, var(--gold) 30%, var(--green-deep) 50%, var(--gold) 70%, var(--gold-deep) 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  color:var(--green-deep); /* fallback for browsers w/o bg-clip:text */
+  text-shadow:0 1px 0 rgba(255,255,255,0.4);
 }
 
 /* Masomeen marquee ticker — continuous scrolling "headline train" */
@@ -89,12 +94,14 @@ p{line-height:1.75;color:var(--charcoal-soft);margin:0 0 1em;}
   white-space:nowrap;
   direction:rtl;
   font-family:var(--font-arabic);
-  font-size:clamp(.78rem,1.6vw,1.02rem);
-  font-weight:600;
+  font-size:clamp(.88rem,1.8vw,1.15rem);
+  font-weight:700;
   flex-shrink:0;
 }
 .masomeen-set span:not(.sep){
-  background:linear-gradient(100deg, var(--gold-deep) 0%, var(--gold-light) 35%, var(--gold) 55%, var(--gold-light) 75%, var(--gold-deep) 100%);
+  /* Deeper gold tones throughout (gold-light only as a brief glint) so the
+     shimmer never dips into low-contrast territory against the cream bg */
+  background:linear-gradient(100deg, var(--gold-deep) 0%, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, var(--gold-deep) 100%);
   background-size:250% auto;
   -webkit-background-clip:text;
   background-clip:text;
@@ -264,6 +271,15 @@ p{line-height:1.75;color:var(--charcoal-soft);margin:0 0 1em;}
 .section{padding:88px 0;}
 .section-tight{padding:56px 0;}
 .section-alt{background:var(--cream-dim);}
+
+/* Newsletter subscribe CTA (home page) */
+.newsletter-cta{max-width:600px;margin:0 auto;text-align:center;}
+.newsletter-cta .icon{
+  width:64px;height:64px;border-radius:50%;background:var(--green-deep);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 20px;
+}
+.newsletter-cta h2{color:var(--green-deep);margin-bottom:12px;}
+.newsletter-cta p{margin-bottom:26px;}
 .eyebrow{
   font-family:var(--font-body);text-transform:uppercase;
   letter-spacing:3px;font-size:.76rem;color:var(--gold-deep);
@@ -353,16 +369,16 @@ p{line-height:1.75;color:var(--charcoal-soft);margin:0 0 1em;}
   display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:14px;
 }
 .prayer-item{
-  text-align:center;background:rgba(255,255,255,0.06);
-  border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:16px 8px;
+  text-align:center;background:rgba(255,255,255,0.1);
+  border:1px solid rgba(201,168,76,0.4);border-radius:10px;padding:16px 8px;
   transition:transform .25s ease,background .25s ease;
 }
-.prayer-item:hover{transform:translateY(-4px);background:rgba(255,255,255,0.1);}
+.prayer-item:hover{transform:translateY(-4px);background:rgba(255,255,255,0.16);}
 .prayer-item .label{
-  font-size:.7rem;text-transform:uppercase;letter-spacing:1.2px;
+  font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px;
   color:var(--gold-light);margin-bottom:8px;font-weight:700;
 }
-.prayer-item .time{font-family:var(--font-display);font-size:1.35rem;font-weight:700;}
+.prayer-item .time{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--cream);}
 
 /* NEW: highlight next upcoming prayer */
 .prayer-item.next-prayer{border-color:var(--gold);background:rgba(201,168,76,0.14);}
@@ -390,6 +406,36 @@ p{line-height:1.75;color:var(--charcoal-soft);margin:0 0 1em;}
   display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 20px;
 }
 .quick-card h3{color:var(--green-deep);font-size:1.2rem;}
+
+/* 9b. MASJID DAILY OPEN SCHEDULE (home page) */
+.schedule-table-wrap{
+  overflow-x:auto;margin-top:28px;border-radius:var(--radius-card);
+  box-shadow:var(--shadow-soft);border:1px solid var(--line);
+}
+.schedule-table{width:100%;border-collapse:collapse;background:var(--cream);min-width:820px;}
+.schedule-table thead th{
+  background:var(--green-deep);color:var(--gold-light);
+  font-family:var(--font-display);font-weight:700;font-size:.95rem;
+  padding:14px 10px;text-align:center;white-space:nowrap;
+}
+.schedule-table thead th.schedule-corner{background:var(--green-darker);}
+.schedule-table tbody th{
+  background:var(--cream-dim);color:var(--green-deep);
+  font-family:var(--font-display);font-weight:700;font-size:.92rem;
+  padding:16px 14px;text-align:left;white-space:nowrap;vertical-align:top;
+  border-top:1px solid var(--line);
+}
+.schedule-table tbody td{
+  padding:14px 12px;text-align:center;vertical-align:top;font-size:.85rem;
+  border-top:1px solid var(--line);border-left:1px solid var(--line);
+}
+.schedule-table tbody td.empty{color:var(--line);font-weight:700;}
+.schedule-table .jamaat{color:var(--gold-deep);font-weight:700;margin-bottom:4px;}
+.schedule-table .window{color:var(--charcoal-soft);}
+.schedule-table .program{
+  color:var(--green-deep);font-weight:700;margin-top:8px;
+  padding-top:8px;border-top:1px dashed var(--line);
+}
 
 /* 13. EVENT CARDS — rich, poster-style flyer cards */
 .event-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;}
@@ -512,9 +558,25 @@ p{line-height:1.75;color:var(--charcoal-soft);margin:0 0 1em;}
 .map-embed iframe{width:100%;height:340px;border:0;display:block;}
 
 /* 18. BROADCAST */
+/* Vertical stack (English above Urdu) rather than side-by-side — each
+   frame stays at full/default size whether one or both are showing. */
+.broadcast-grid{display:flex;flex-direction:column;gap:36px;}
+.broadcast-column[hidden]{display:none;}
+.broadcast-lang-label{
+  color:var(--green-deep);font-size:1.05rem;margin:0 0 12px;display:flex;align-items:center;gap:8px;
+}
+.broadcast-lang-label i{color:var(--gold-deep);}
 .broadcast-wrap{position:relative;border-radius:14px;overflow:hidden;box-shadow:var(--shadow-lift);background:#000;}
 .broadcast-frame{position:relative;padding-top:56.25%;}
 .broadcast-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.broadcast-offline{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;background:linear-gradient(150deg, var(--green-deep) 0%, #0f2b22 100%);color:var(--cream);
+  padding:20px;
+}
+.broadcast-offline i{font-size:2.4rem;color:var(--gold-light);margin-bottom:16px;}
+.broadcast-offline p{color:var(--cream);font-weight:700;font-size:1.05rem;margin:0 0 6px;}
+.broadcast-offline span{color:var(--cream-dim);font-size:.85rem;}
 
 /* 19. FOOTER */
 footer{background:var(--green-darker);color:var(--cream-dim);padding:56px 0 24px;}
@@ -546,7 +608,12 @@ footer{background:var(--green-darker);color:var(--cream-dim);padding:56px 0 24px
   display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
   font-size:.78rem;color:rgba(255,255,255,0.45);
 }
-.admin-gear{background:none;border:none;color:rgba(255,255,255,0.35);font-size:.9rem;padding:6px;transition:color .2s ease;}
+.admin-gear{
+  background:none;border:none;color:rgba(255,255,255,0.35);font-size:.9rem;padding:6px;
+  opacity:0;transition:color .2s ease,opacity .2s ease;
+}
+.footer-bottom:hover .admin-gear,
+.footer-bottom:focus-within .admin-gear{opacity:1;}
 .admin-gear:hover{color:var(--gold-light);}
 
 /* 20. ADMIN PANEL */
@@ -655,6 +722,21 @@ footer{background:var(--green-darker);color:var(--cream-dim);padding:56px 0 24px
 .people-card{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius-card);padding:20px 22px;box-shadow:var(--shadow-soft);}
 .people-card .role{font-weight:700;color:var(--green-deep);font-size:.82rem;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
 .people-card .name{font-family:var(--font-display);font-size:1.05rem;}
+
+/* Combined image + "At a Glance" info in a single unified card (About Us history) */
+.history-media-card{
+  background:var(--cream);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:var(--shadow-soft);
+}
+.history-media-card img{width:100%;display:block;object-fit:cover;max-height:280px;}
+.history-media-card .caption{
+  text-align:center;font-size:.8rem;color:var(--charcoal-soft);font-style:italic;
+  padding:10px 6px 4px;
+}
+.history-media-card .history-media-info{
+  padding:24px 26px 26px;border-top:1px solid var(--line);
+}
+.history-media-card .history-media-info h3{color:var(--green-deep);margin-top:0;}
 
 /* Photo placeholder frame — used to hold in-content photos (e.g. About Us history) */
 .photo-frame{

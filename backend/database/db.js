@@ -59,6 +59,21 @@ db.exec(`
     message TEXT NOT NULL,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
   );
+
+  -- Single-row table: the currently live YouTube video(s), set manually by
+  -- an admin when a stream starts (see models/Broadcast.js). Two independent
+  -- slots since parallel English/Urdu majalis sometimes broadcast at once.
+  -- NULL in either column means that slot isn't live right now.
+  -- Urdu defaults to hidden — most days only English broadcasts, and the
+  -- admin explicitly shows Urdu on the rare day both run in parallel.
+  CREATE TABLE IF NOT EXISTS broadcast (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    video_id_english TEXT,
+    video_id_urdu TEXT,
+    visible_english INTEGER NOT NULL DEFAULT 1,
+    visible_urdu INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // ---- Migrations (safe to re-run on an already-populated DB) -----
@@ -76,6 +91,24 @@ if (!eventCols.includes("poster_url")) {
 eventCols = db.prepare("PRAGMA table_info(events)").all().map((c) => c.name);
 if (!eventCols.includes("poster_alt")) {
   db.exec("ALTER TABLE events ADD COLUMN poster_alt TEXT");
+}
+
+let broadcastCols = db.prepare("PRAGMA table_info(broadcast)").all().map((c) => c.name);
+if (broadcastCols.includes("video_id") && !broadcastCols.includes("video_id_english")) {
+  db.exec("ALTER TABLE broadcast RENAME COLUMN video_id TO video_id_english");
+  broadcastCols = db.prepare("PRAGMA table_info(broadcast)").all().map((c) => c.name);
+}
+if (!broadcastCols.includes("video_id_english")) {
+  db.exec("ALTER TABLE broadcast ADD COLUMN video_id_english TEXT");
+}
+if (!broadcastCols.includes("video_id_urdu")) {
+  db.exec("ALTER TABLE broadcast ADD COLUMN video_id_urdu TEXT");
+}
+if (!broadcastCols.includes("visible_english")) {
+  db.exec("ALTER TABLE broadcast ADD COLUMN visible_english INTEGER NOT NULL DEFAULT 1");
+}
+if (!broadcastCols.includes("visible_urdu")) {
+  db.exec("ALTER TABLE broadcast ADD COLUMN visible_urdu INTEGER NOT NULL DEFAULT 0");
 }
 
 module.exports = db;
