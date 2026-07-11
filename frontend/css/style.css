@@ -213,7 +213,12 @@ p{line-height:1.75;color:var(--charcoal-soft);margin:0 0 1em;}
 }
 .nav-link:hover,.nav-link.active{color:var(--gold-light);}
 .nav-link i.fa-chevron-down{font-size:.6rem;transition:transform .2s ease;}
-.has-dropdown:hover .fa-chevron-down{transform:rotate(180deg);}
+/* hover:hover excludes touchscreens — without this, tapping on iOS/mobile
+   WebKit triggers a "sticky hover" that never clears, leaving the chevron
+   stuck rotated even after the dropdown collapses (mobile-open removed) */
+@media (hover:hover){
+  .has-dropdown:hover .fa-chevron-down{transform:rotate(180deg);}
+}
 .dropdown{
   position:absolute;top:calc(100% + 6px);left:0;
   background:var(--cream);min-width:230px;
