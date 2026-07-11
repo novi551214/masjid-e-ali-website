@@ -10,6 +10,8 @@ services:
     # and default events if they're missing, but never duplicates them.
     startCommand: node database/seed.js && node server.js
     envVars:
+      - key: NODE_VERSION
+        value: 20.18.1
       - key: JWT_SECRET
         sync: false
       - key: CORS_ORIGIN
