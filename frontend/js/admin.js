@@ -102,7 +102,7 @@ window.renderEvents = function (events) {
   }
 
   grid.innerHTML = list.map(function (ev) {
-    var posterUrl = ev.poster_url ? API_BASE + ev.poster_url : "";
+    var posterUrl = ev.poster_url ? escapeHtml(API_BASE + ev.poster_url) : "";
     var altText = escapeHtml(ev.poster_alt || ev.title);
     return '<div class="event-card reveal in-view">' +
       (posterUrl
@@ -326,7 +326,7 @@ window.AdminModule = (function () {
       return '<div class="event-admin-row" data-event-id="' + ev.id + '">' +
         '<div class="row-top">' +
         (ev.poster_url
-          ? '<img src="' + API_BASE + ev.poster_url + '" class="poster-thumb" alt="Poster thumbnail">'
+          ? '<img src="' + escapeHtml(API_BASE + ev.poster_url) + '" class="poster-thumb" alt="Poster thumbnail">'
           : '<div class="poster-thumb poster-thumb-empty"><i class="fa-solid fa-mosque"></i></div>') +
         '<div class="row-top-text"><h4>' + escapeHtml(ev.title) + '</h4>' +
         '<div style="font-size:.82rem;color:var(--gold-deep);font-weight:700;">' + escapeHtml(ev.date) + '</div>' +

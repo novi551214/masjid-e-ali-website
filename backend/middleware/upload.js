@@ -9,6 +9,15 @@ const multer = require("multer");
 const UPLOAD_DIR = path.join(__dirname, "..", "uploads", "posters");
 fs.mkdirSync(UPLOAD_DIR, { recursive: true }); // multer does not create missing dirs itself
 
+// Map from the (already-validated) MIME type rather than trusting the
+// client-supplied original filename's extension — closes off any chance
+// of special characters riding through into the stored filename/URL.
+const EXT_BY_MIME = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+};
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOAD_DIR),
   filename: (req, file, cb) => {
@@ -16,8 +25,12 @@ const storage = multer.diskStorage({
     // assignEventId in routes/events.js), or req.body.id (the flat
     // /upload-poster endpoint — the client must send the "id" field
     // before the "poster" file field so multer has parsed it by now).
-    const id = req.params.id || req.eventId || (req.body && req.body.id);
-    const ext = path.extname(file.originalname).toLowerCase();
+    // Strip to a safe charset — this is attacker-reachable (req.body.id
+    // isn't validated against the DB until after multer runs), so it must
+    // not be trusted verbatim as part of a filesystem path.
+    const rawId = req.params.id || req.eventId || (req.body && req.body.id) || "unknown";
+    const id = String(rawId).replace(/[^a-zA-Z0-9_-]/g, "");
+    const ext = EXT_BY_MIME[file.mimetype] || "";
     cb(null, `event-${id}-${Date.now()}${ext}`);
   },
 });
