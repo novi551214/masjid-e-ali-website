@@ -17,6 +17,21 @@
     UIModule.initVenmoCopy();
     UIModule.initFooterYear();
     UIModule.initPamphletLightbox();
+    UIModule.initHeroVideo();
+  };
+
+  /* ── Hero Video ──────────────────────────────────────────── */
+  // The `autoplay` HTML attribute alone isn't reliably honored on every
+  // mobile browser/OS combination — explicitly calling play() is the
+  // robust fallback (muted + playsinline already satisfy autoplay policy,
+  // so this succeeds silently; the .catch is just a safety net for the
+  // rare case a browser still blocks it, leaving the poster image showing).
+  UIModule.initHeroVideo = function () {
+    const video = document.querySelector('.hero-video');
+    if (!video) return;
+    const tryPlay = function () { video.play().catch(function () {}); };
+    if (video.readyState >= 2) tryPlay();
+    else video.addEventListener('loadeddata', tryPlay, { once: true });
   };
 
   /* ── 2. Mobile Nav ───────────────────────────────────────── */
