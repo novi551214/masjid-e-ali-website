@@ -156,3 +156,4 @@ These were intentionally left as placeholders rather than guessed:
   commit either one; both contain real secrets/credentials once seeded.
 - CORS is restricted to `CORS_ORIGIN` — set this to your real frontend
   domain before deploying (not `*`).
+# masjid-e-ali-website
