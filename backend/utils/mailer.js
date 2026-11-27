@@ -23,7 +23,7 @@ if (GMAIL_USER && GMAIL_APP_PASSWORD) {
 }
 
 async function sendMail({ to, subject, text, replyTo }) {
-  if (!transporter) return;
+  if (!transporter || !to) return;
   await transporter.sendMail({
     from: `"Masjid-e-Ali Website" <${GMAIL_USER}>`,
     to,

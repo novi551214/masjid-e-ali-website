@@ -10,10 +10,13 @@ const bcrypt = require("bcryptjs");
 const db = require("./db");
 
 // ---- Admin user --------------------------------------------------
-// ⚠️ CHANGE THIS PASSWORD before deploying to production.
-// Set ADMIN_SEED_PASSWORD in your .env file to override the default.
-const ADMIN_USERNAME = process.env.ADMIN_SEED_USERNAME || "admin";
-const ADMIN_PASSWORD = process.env.ADMIN_SEED_PASSWORD || "ChangeMe_Masjid2026!";
+const ADMIN_USERNAME = (process.env.ADMIN_SEED_USERNAME || "").trim();
+const ADMIN_PASSWORD = process.env.ADMIN_SEED_PASSWORD || "";
+
+if (!ADMIN_USERNAME || ADMIN_PASSWORD.length < 12 || /change|replace|example|password/i.test(ADMIN_PASSWORD)) {
+  console.error("ADMIN_SEED_USERNAME and a non-placeholder ADMIN_SEED_PASSWORD of at least 12 characters are required.");
+  process.exit(1);
+}
 
 const existingAdmin = db.prepare("SELECT id FROM admins WHERE username = ?").get(ADMIN_USERNAME);
 
@@ -21,7 +24,6 @@ if (!existingAdmin) {
   const hash = bcrypt.hashSync(ADMIN_PASSWORD, 12);
   db.prepare("INSERT INTO admins (username, password_hash) VALUES (?, ?)").run(ADMIN_USERNAME, hash);
   console.log(`✅ Admin user created — username: "${ADMIN_USERNAME}"`);
-  console.log(`   Password: ${ADMIN_PASSWORD === "ChangeMe_Masjid2026!" ? "(default — CHANGE THIS, see .env.example)" : "(set from .env)"}`);
 } else {
   console.log(`ℹ️  Admin user "${ADMIN_USERNAME}" already exists — skipping.`);
 }

@@ -1,0 +1,10 @@
+{
+  "reviewer": "Authorized organization representative",
+  "reviewed_at": "YYYY-MM-DD",
+  "organization_authority_approved": false,
+  "photos_and_video_approved": false,
+  "names_and_contacts_approved": false,
+  "events_and_program_details_verified": false,
+  "donation_and_submission_copy_approved": false,
+  "deployment_configuration_verified": false
+}

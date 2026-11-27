@@ -4,28 +4,30 @@
 
 const Submission = require("../models/Submission");
 const mailer = require("../utils/mailer");
+const { normalizeSubmission } = require("../lib/submissionValidation");
 
 function createContactSubmission(req, res) {
-  const { name, email, phone, subject, message } = req.body;
+  const { valid, data } = normalizeSubmission(req.body, "contact");
+  const { name, email, phone, subject, message } = data;
 
-  if (!name || !name.trim() || !email || !email.trim() || !subject || !subject.trim() || !message || !message.trim()) {
-    return res.status(400).json({ error: "Name, email, subject, and message are required." });
+  if (!valid) {
+    return res.status(400).json({ error: "Provide a valid email and keep all required fields within their length limits." });
   }
 
   const record = Submission.create({
     type: "contact",
-    name: name.trim(),
-    email: email.trim(),
-    phone: (phone || "").trim(),
-    subject: subject.trim(),
-    message: message.trim(),
+    name,
+    email,
+    phone,
+    subject,
+    message,
   });
 
   res.status(201).json({ success: true, id: record.id });
 
   mailer
     .sendMail({
-      to: process.env.CONTACT_TO_EMAIL || "info@masjid-e-ali.org",
+      to: process.env.CONTACT_TO_EMAIL,
       subject: `New Contact Form message: ${record.subject}`,
       text: `Name: ${record.name}\nEmail: ${record.email}\nPhone: ${record.phone || "—"}\n\n${record.message}`,
       replyTo: record.email,
@@ -34,27 +36,28 @@ function createContactSubmission(req, res) {
 }
 
 function createScholarSubmission(req, res) {
-  const { name, email, phone, topic, question } = req.body;
+  const { valid, data } = normalizeSubmission(req.body, "scholar");
+  const { name, email, phone, subject, message } = data;
 
-  if (!name || !name.trim() || !email || !email.trim() || !topic || !topic.trim() || !question || !question.trim()) {
-    return res.status(400).json({ error: "Name, email, topic, and question are required." });
+  if (!valid) {
+    return res.status(400).json({ error: "Provide a valid email and keep all required fields within their length limits." });
   }
 
   const record = Submission.create({
     type: "scholar",
-    name: name.trim(),
-    email: email.trim(),
-    phone: (phone || "").trim(),
-    subject: topic.trim(),
-    message: question.trim(),
+    name,
+    email,
+    phone,
+    subject,
+    message,
   });
 
   res.status(201).json({ success: true, id: record.id });
 
   mailer
     .sendMail({
-      to: process.env.SCHOLAR_TO_EMAIL || "riz8663@gmail.com",
-      subject: `New question for Maulana Rizwan Rizvi: ${record.subject}`,
+      to: process.env.SCHOLAR_TO_EMAIL,
+      subject: `New scholar question: ${record.subject}`,
       text: `Name: ${record.name}\nEmail: ${record.email}\nPhone: ${record.phone || "—"}\n\n${record.message}`,
       replyTo: record.email,
     })

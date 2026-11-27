@@ -5,12 +5,12 @@
 
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "";
 
-if (!JWT_SECRET) {
+if (JWT_SECRET.length < 32 || /change|replace|example|secret/i.test(JWT_SECRET)) {
   // Fail loudly at startup rather than silently signing tokens with "undefined"
   throw new Error(
-    "JWT_SECRET is not set. Copy .env.example to .env and set a strong random JWT_SECRET before starting the server."
+    "JWT_SECRET must be a non-placeholder value of at least 32 characters. Copy .env.example to .env and generate a new secret before starting the server."
   );
 }
 

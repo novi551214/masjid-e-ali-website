@@ -528,7 +528,7 @@ window.AdminModule = (function () {
       });
     });
 
-    // Save prayer times → backend, then localStorage fallback
+    // Save prayer times to the authoritative backend, then refresh the local display cache.
     _el("admSavePrayer").addEventListener("click", function () {
       var payload = {
         date_gregorian: _el("admDateGregorian").value.trim(),
@@ -551,10 +551,9 @@ window.AdminModule = (function () {
           if (window.PrayerModule) window.PrayerModule.fetchAndRender();
           flashButton(_el("admSavePrayer"), "Saved!");
         })
-        .catch(function () {
-          DataStore.setPrayerTimes(payload);
-          if (window.PrayerModule) window.PrayerModule.fetchAndRender();
-          flashButton(_el("admSavePrayer"), "Saved (local)");
+        .catch(function (error) {
+          console.error("Prayer-time save failed:", error);
+          flashButton(_el("admSavePrayer"), "Save failed");
         });
     });
 

@@ -28,13 +28,51 @@ require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const ALLOWED_ORIGIN = process.env.CORS_ORIGIN || "*";
+const isProduction = process.env.NODE_ENV === "production";
 
-app.use(cors({ origin: ALLOWED_ORIGIN }));
+function allowedOrigins() {
+  const raw = process.env.CORS_ORIGINS || process.env.CORS_ORIGIN || "";
+  const origins = raw.split(",").map((value) => value.trim()).filter(Boolean).map((value) => {
+    try {
+      return new URL(value).origin;
+    } catch {
+      throw new Error(`Invalid CORS origin: ${value}`);
+    }
+  });
+  if (isProduction && origins.length === 0) {
+    throw new Error("CORS_ORIGIN or CORS_ORIGINS must contain an exact HTTPS origin in production.");
+  }
+  return origins;
+}
+
+const ALLOWED_ORIGINS = allowedOrigins();
+
+app.disable("x-powered-by");
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  res.setHeader("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
+  next();
+});
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    return callback(Object.assign(new Error("Origin not allowed by CORS."), { status: 403 }));
+  },
+}));
 app.use(express.json({ limit: "100kb" }));
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+}));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ---- Routes ------------------------------------------------------
@@ -54,12 +92,12 @@ app.use("/api", (req, res) => res.status(404).json({ error: "Not found." }));
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({ error: "Internal server error." });
+  res.status(err.status || 500).json({ error: err.status === 403 ? err.message : "Internal server error." });
 });
 
 app.listen(PORT, () => {
   console.log(`Masjid-e-Ali API listening on http://localhost:${PORT}`);
-  if (ALLOWED_ORIGIN === "*") {
-    console.warn("⚠️  CORS_ORIGIN is '*' — fine for local dev, but set it to your real frontend domain in production.");
+  if (ALLOWED_ORIGINS.length === 0) {
+    console.warn("No cross-origin frontend is configured; only requests without an Origin header will be accepted.");
   }
 });
