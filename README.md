@@ -27,12 +27,10 @@ masjid-e-ali-website/
 
 ## 1. Frontend
 
-The frontend is a plain static site — no build step. Currently the
-admin panel and prayer times still talk to `localStorage` (from the
-original prototype). To connect it to the real backend below, update
-`frontend/js/admin.js` and `frontend/js/prayer.js` to call the API
-endpoints instead of (or in addition to) `localStorage` — see
-**Section 3** for the exact endpoints available.
+The frontend is a plain static site with no build step. Events, admin login,
+admin edits, submissions, broadcasts, and prayer-time overrides use the backend
+API. The browser keeps only non-authoritative prayer-display caches for offline
+fallback. A failed admin save is never presented as a successful local update.
 
 **To preview locally**, serve the `frontend/` folder with any static
 file server, e.g.:
@@ -156,4 +154,19 @@ These were intentionally left as placeholders rather than guessed:
   commit either one; both contain real secrets/credentials once seeded.
 - CORS is restricted to `CORS_ORIGIN` — set this to your real frontend
   domain before deploying (not `*`).
+
+Production startup rejects a missing origin, short/placeholder JWT secrets, and
+default seed credentials. Run the verification commands from the repository root:
+
+```bash
+cd backend && npm test && npm run check
+npm run prepublish:check
+```
+
+The prepublication check deliberately fails until an authorized organization
+representative completes the ignored `content-review.json` record using
+`content-review.example.json`. See `SECURITY.md` for the remaining limitations.
+
+No deployment, SMTP delivery, organization authorization, or real admin workflow
+was verified during the portfolio hardening pass.
 # masjid-e-ali-website

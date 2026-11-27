@@ -7,10 +7,17 @@
 // ================================================================
 
 const path = require("path");
+const fs = require("fs");
 const Database = require("better-sqlite3");
 
 const DB_PATH = path.join(__dirname, "masjid.db");
 const db = new Database(DB_PATH);
+
+try {
+  fs.chmodSync(DB_PATH, 0o600);
+} catch (error) {
+  console.warn("Could not restrict database file permissions:", error.message);
+}
 
 db.pragma("journal_mode = WAL");
 

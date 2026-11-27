@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "seed": "node database/seed.js"
+    "seed": "node database/seed.js",
+    "test": "node --test test/*.test.js",
+    "check": "node ../scripts/check.mjs",
+    "prepublish:check": "node ../scripts/prepublish-check.mjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
